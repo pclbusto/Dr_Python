@@ -9,10 +9,10 @@ python -m arcade.examples.starting_template
 """
 import arcade
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Starting Template"
-
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1352
+SCREEN_TITLE = "Dr Python"
+MOVEMENT_SPEED = 5
 
 class MyGame(arcade.Window):
     """
@@ -25,16 +25,47 @@ class MyGame(arcade.Window):
 
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
-
+        self.background = None
         arcade.set_background_color(arcade.color.AMAZON)
-
+        self.center_window()
+        self.player_list = None
+        self.wall_list = None
         # If you have sprite lists, you should create them here,
         # and set them to None
 
     def setup(self):
-        """ Set up the game variables. Call to re-start the game. """
-        # Create your sprites and sprite lists here
-        pass
+        """ Set up the game and initialize the variables. """
+
+        # Load the background image. Do this in the setup so we don't keep reloading it all the time.
+        # Image from:
+        # https://wallpaper-gallery.net/single/free-background-images/free-background-images-22.html
+        self.background = arcade.load_texture("../art/background.png")
+        self.player_list = arcade.SpriteList()
+        self.wall_list = arcade.SpriteList()
+        self.player_sprite = arcade.Sprite("../art/pill-cel_cel.png", 1)
+        self.player_sprite.center_x=988
+        self.player_sprite.center_y = 1000
+        self.player_list.append(self.player_sprite)
+
+    def on_key_press(self, key, modifiers):
+        """Called whenever a key is pressed. """
+        print("holaaa")
+        if key == arcade.key.UP:
+            self.player_sprite.change_y = MOVEMENT_SPEED
+        elif key == arcade.key.DOWN:
+            self.player_sprite.change_y = -MOVEMENT_SPEED
+        elif key == arcade.key.LEFT:
+            self.player_sprite.change_x = -MOVEMENT_SPEED
+        elif key == arcade.key.RIGHT:
+            self.player_sprite.change_x = MOVEMENT_SPEED
+
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+
+        if key == arcade.key.UP or key == arcade.key.DOWN:
+            self.player_sprite.change_y = 0
+        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
+            self.player_sprite.change_x = 0
 
     def on_draw(self):
         """
@@ -44,7 +75,12 @@ class MyGame(arcade.Window):
         # This command should happen before we start drawing. It will clear
         # the screen to the background color, and erase what we drew last frame.
         self.clear()
-
+        # Draw the background texture
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
+        self.wall_list.draw()
+        self.player_list.draw()
         # Call draw() on all your sprite lists below
 
     def on_update(self, delta_time):
