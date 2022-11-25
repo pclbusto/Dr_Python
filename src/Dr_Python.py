@@ -7,6 +7,7 @@ template.
 If Python and Arcade are installed, this example can be run from the command line with:
 python -m arcade.examples.starting_template
 """
+
 import arcade
 
 SCREEN_WIDTH = 1920
@@ -49,7 +50,8 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-        print("holaaa")
+        print(self.player_sprite.left, self.player_sprite.right)
+
         if key == arcade.key.UP:
             self.player_sprite.change_y = MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
@@ -67,6 +69,18 @@ class MyGame(arcade.Window):
         elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
             self.player_sprite.change_x = 0
 
+
+    def on_update(self, delta_time):
+        """ Movement and game logic """
+        # Move the player
+        if self.player_sprite.left <= 718:
+            self.player_sprite.change_x = 0
+            self.player_sprite.left = 719
+        if self.player_sprite.right >= 1258:
+            self.player_sprite.change_x = 0
+            self.player_sprite.right = 1257
+        self.player_list.update()
+
     def on_draw(self):
         """
         Render the screen.
@@ -82,47 +96,6 @@ class MyGame(arcade.Window):
         self.wall_list.draw()
         self.player_list.draw()
         # Call draw() on all your sprite lists below
-
-    def on_update(self, delta_time):
-        """
-        All the logic to move, and the game logic goes here.
-        Normally, you'll call update() on the sprite lists that
-        need it.
-        """
-        pass
-
-    def on_key_press(self, key, key_modifiers):
-        """
-        Called whenever a key on the keyboard is pressed.
-
-        For a full list of keys, see:
-        https://api.arcade.academy/en/latest/arcade.key.html
-        """
-        pass
-
-    def on_key_release(self, key, key_modifiers):
-        """
-        Called whenever the user lets off a previously pressed key.
-        """
-        pass
-
-    def on_mouse_motion(self, x, y, delta_x, delta_y):
-        """
-        Called whenever the mouse moves.
-        """
-        pass
-
-    def on_mouse_press(self, x, y, button, key_modifiers):
-        """
-        Called when the user presses a mouse button.
-        """
-        pass
-
-    def on_mouse_release(self, x, y, button, key_modifiers):
-        """
-        Called when a user releases a mouse button.
-        """
-        pass
 
 
 def main():
