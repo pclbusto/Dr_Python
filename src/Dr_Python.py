@@ -10,8 +10,9 @@ python -m arcade.examples.starting_template
 
 import arcade
 
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1352
+ZOOM_FACTOR = 2
+SCREEN_WIDTH = int(1920/ZOOM_FACTOR)
+SCREEN_HEIGHT = int(1352/ZOOM_FACTOR)
 SCREEN_TITLE = "Dr Python"
 MOVEMENT_SPEED = 5
 
@@ -44,13 +45,14 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.player_sprite = arcade.Sprite("../art/pill-cel_cel.png", 1)
-        self.player_sprite.center_x=988
-        self.player_sprite.center_y = 1000
+        self.player_sprite.scale = 1/ZOOM_FACTOR
+        self.player_sprite.center_x=988/ZOOM_FACTOR
+        self.player_sprite.center_y = 1000/ZOOM_FACTOR
         self.player_list.append(self.player_sprite)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-        print(self.player_sprite.left, self.player_sprite.right)
+        print(self.player_sprite.bottom)
 
         if key == arcade.key.UP:
             self.player_sprite.change_y = MOVEMENT_SPEED
@@ -73,12 +75,16 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time):
         """ Movement and game logic """
         # Move the player
-        if self.player_sprite.left <= 718:
+        if self.player_sprite.left <= 718/ZOOM_FACTOR:
             self.player_sprite.change_x = 0
-            self.player_sprite.left = 719
-        if self.player_sprite.right >= 1258:
+            self.player_sprite.left = 719/ZOOM_FACTOR
+        if self.player_sprite.right >= 1258 / ZOOM_FACTOR:
             self.player_sprite.change_x = 0
-            self.player_sprite.right = 1257
+            self.player_sprite.right = 1257 / ZOOM_FACTOR
+        if self.player_sprite.bottom <= 400 / ZOOM_FACTOR:
+            self.player_sprite.change_y = 0
+            self.player_sprite.bottom = 396 / ZOOM_FACTOR
+
         self.player_list.update()
 
     def on_draw(self):
