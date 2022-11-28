@@ -10,11 +10,14 @@ python -m arcade.examples.starting_template
 
 import arcade
 
-ZOOM_FACTOR = 2
+ZOOM_FACTOR = 1
 SCREEN_WIDTH = int(1920/ZOOM_FACTOR)
 SCREEN_HEIGHT = int(1352/ZOOM_FACTOR)
 SCREEN_TITLE = "Dr Python"
 MOVEMENT_SPEED = 5
+BOTLE_LIMIT_LEFT = 718
+BOTLE_LIMIT_RIGHT = 1258
+BOTLE_LIMIT_BOTTOM = 74
 
 class MyGame(arcade.Window):
     """
@@ -32,8 +35,12 @@ class MyGame(arcade.Window):
         self.center_window()
         self.player_list = None
         self.wall_list = None
-        # If you have sprite lists, you should create them here,
-        # and set them to None
+
+        # Track the current state of what key is pressed
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -50,40 +57,67 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = 1000/ZOOM_FACTOR
         self.player_list.append(self.player_sprite)
 
+    def update_player_speed(self):
+
+        # Calculate speed based on the keys pressed
+        self.player_sprite.change_x = 0
+        self.player_sprite.change_y = 0
+
+        if self.up_pressed and not self.down_pressed:
+            self.player_sprite.change_y = MOVEMENT_SPEED
+        elif self.down_pressed and not self.up_pressed:
+            self.player_sprite.change_y = -MOVEMENT_SPEED
+        if self.left_pressed and not self.right_pressed:
+            self.player_sprite.change_x = -MOVEMENT_SPEED
+        elif self.right_pressed and not self.left_pressed:
+            self.player_sprite.change_x = MOVEMENT_SPEED
+
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-        print(self.player_sprite.bottom)
 
         if key == arcade.key.UP:
-            self.player_sprite.change_y = MOVEMENT_SPEED
+            self.up_pressed = True
+            self.update_player_speed()
         elif key == arcade.key.DOWN:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
+            self.down_pressed = True
+            self.update_player_speed()
         elif key == arcade.key.LEFT:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
+            self.left_pressed = True
+            self.update_player_speed()
         elif key == arcade.key.RIGHT:
-            self.player_sprite.change_x = MOVEMENT_SPEED
+            self.right_pressed = True
+            self.update_player_speed()
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
 
-        if key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
-        elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player_sprite.change_x = 0
+        if key == arcade.key.UP:
+            self.up_pressed = False
+            self.update_player_speed()
+        elif key == arcade.key.DOWN:
+            self.down_pressed = False
+            self.update_player_speed()
+        elif key == arcade.key.LEFT:
+            self.left_pressed = False
+            self.update_player_speed()
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = False
+            self.update_player_speed()
 
 
     def on_update(self, delta_time):
         """ Movement and game logic """
+        print(self.player_sprite.width)
         # Move the player
-        if self.player_sprite.left <= 718/ZOOM_FACTOR:
+        if self.player_sprite.left <= BOTLE_LIMIT_LEFT/ZOOM_FACTOR:
             self.player_sprite.change_x = 0
-            self.player_sprite.left = 719/ZOOM_FACTOR
-        if self.player_sprite.right >= 1258 / ZOOM_FACTOR:
+            self.player_sprite.left = (BOTLE_LIMIT_LEFT+1)/ZOOM_FACTOR
+        if self.player_sprite.right >= BOTLE_LIMIT_RIGHT / ZOOM_FACTOR:
             self.player_sprite.change_x = 0
-            self.player_sprite.right = 1257 / ZOOM_FACTOR
-        if self.player_sprite.bottom <= 400 / ZOOM_FACTOR:
+            self.player_sprite.right = (BOTLE_LIMIT_RIGHT-1) / ZOOM_FACTOR
+        if self.player_sprite.bottom <= BOTLE_LIMIT_BOTTOM / ZOOM_FACTOR:
             self.player_sprite.change_y = 0
-            self.player_sprite.bottom = 396 / ZOOM_FACTOR
+            self.player_sprite.bottom = (BOTLE_LIMIT_BOTTOM+1) / ZOOM_FACTOR
 
         self.player_list.update()
 
