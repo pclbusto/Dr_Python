@@ -9,6 +9,8 @@ python -m arcade.examples.starting_template
 """
 
 import arcade
+import pathlib
+import os
 
 ZOOM_FACTOR = 1
 SCREEN_WIDTH = int(1920/ZOOM_FACTOR)
@@ -18,6 +20,7 @@ MOVEMENT_SPEED = 5
 BOTLE_LIMIT_LEFT = 718
 BOTLE_LIMIT_RIGHT = 1258
 BOTLE_LIMIT_BOTTOM = 74
+ROOT_PATH = ''
 
 class MyGame(arcade.Window):
     """
@@ -48,10 +51,10 @@ class MyGame(arcade.Window):
         # Load the background image. Do this in the setup so we don't keep reloading it all the time.
         # Image from:
         # https://wallpaper-gallery.net/single/free-background-images/free-background-images-22.html
-        self.background = arcade.load_texture("../art/background.png")
+        self.background = arcade.load_texture(os.path.join(ROOT_PATH,"art","background.png"))
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        self.player_sprite = arcade.Sprite("../art/pill-cel_cel.png", 1)
+        self.player_sprite = arcade.Sprite(os.path.join(ROOT_PATH,"art","pill-cel_cel.png")"../art/pill-cel_cel.png", 1)
         self.player_sprite.scale = 1/ZOOM_FACTOR
         self.player_sprite.center_x=988/ZOOM_FACTOR
         self.player_sprite.center_y = 1000/ZOOM_FACTOR
@@ -139,6 +142,7 @@ class MyGame(arcade.Window):
 
 
 def main():
+
     """ Main function """
     game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     game.setup()
@@ -146,4 +150,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    print("HOLAAAAAAAAAAAAAA")
+    ROOT_PATH = pathlib.Path().resolve()
+    # print(ROOT_PATH)
+    path =  os.path.join(ROOT_PATH,"art","background.png")
+    print(path)
+    # main()
