@@ -22,6 +22,25 @@ BOTLE_LIMIT_RIGHT = 1258
 BOTLE_LIMIT_BOTTOM = 74
 ROOT_PATH = ''
 
+
+class Pildora(arcade.Sprite):
+
+    def rotate_around_point(self, point: arcade.Point, degrees: float):
+        """
+        Rotate the sprite around a point by the set amount of degrees
+
+        :param point: The point that the sprite will rotate about
+        :param degrees: How many degrees to rotate the sprite
+        """
+
+        # Make the sprite turn as its position is moved
+        self.angle += degrees
+
+        # Move the sprite along a circle centered around the passed point
+        self.position = arcade.rotate_point(
+            self.center_x, self.center_y,
+            point[0], point[1], degrees)
+
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -54,7 +73,7 @@ class MyGame(arcade.Window):
         self.background = arcade.load_texture(os.path.join(ROOT_PATH,"art","background.png"))
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        self.player_sprite = arcade.Sprite(os.path.join(ROOT_PATH,"art","pill-cel_cel.png")"../art/pill-cel_cel.png", 1)
+        self.player_sprite = Pildora(os.path.join(ROOT_PATH,"art","pill-cel_cel.png"), 1)
         self.player_sprite.scale = 1/ZOOM_FACTOR
         self.player_sprite.center_x=988/ZOOM_FACTOR
         self.player_sprite.center_y = 1000/ZOOM_FACTOR
@@ -75,6 +94,8 @@ class MyGame(arcade.Window):
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = MOVEMENT_SPEED
 
+    
+# Emil2024
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 
@@ -90,6 +111,8 @@ class MyGame(arcade.Window):
         elif key == arcade.key.RIGHT:
             self.right_pressed = True
             self.update_player_speed()
+        elif key == arcade.key.Q:
+            self.player_sprite.rotate_around_point(self.player_sprite.position, 90)
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -150,9 +173,9 @@ def main():
 
 
 if __name__ == "__main__":
-    print("HOLAAAAAAAAAAAAAA")
-    ROOT_PATH = pathlib.Path().resolve()
-    # print(ROOT_PATH)
-    path =  os.path.join(ROOT_PATH,"art","background.png")
-    print(path)
-    # main()
+    # print("HOLAAAAAAAAAAAAAA")
+    # ROOT_PATH = pathlib.Path().resolve()
+    # # print(ROOT_PATH)
+    # path =  os.path.join(ROOT_PATH,"art","background.png")
+    # print(path)
+    main()
