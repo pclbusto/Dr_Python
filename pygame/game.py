@@ -254,10 +254,11 @@ class Game:
     def _falling(self, dt):
         self.timer -= dt
         while self.timer <= 0 and self.state == State.FALLING:
-            if self.board.gravity_step():
+            self.board.gravity_step()
+            if self.board.gravity_step(dry=True):
                 self.timer += self.fall_step
             else:
-                self.resolve()
+                self.resolve()  # todo apoyado: sin esperar otro intervalo
 
     def _paused(self, dt):
         ctl = self.ctl
