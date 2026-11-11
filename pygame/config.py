@@ -52,6 +52,22 @@ def user_dir():
     return path
 
 
+def cache_dir():
+    """Carpeta para los sprites ya escalados a cada resolucion.
+
+    DRPYTHON_CACHE_DIR la fuerza; si no, $XDG_CACHE_HOME/dr-python o
+    ~/.cache/dr-python. Devuelve None si no se puede crear (sin cache)."""
+    path = os.environ.get("DRPYTHON_CACHE_DIR")
+    if not path:
+        base = os.environ.get("XDG_CACHE_HOME") or os.path.join(os.path.expanduser("~"), ".cache")
+        path = os.path.join(base, "dr-python")
+    try:
+        os.makedirs(path, exist_ok=True)
+        return path
+    except OSError:
+        return None
+
+
 def load_json(name, default):
     try:
         with open(os.path.join(user_dir(), name)) as f:

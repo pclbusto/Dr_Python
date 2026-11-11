@@ -6,6 +6,7 @@ import tempfile
 
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 os.environ["DRPYTHON_CONFIG_DIR"] = tempfile.mkdtemp()
+os.environ["DRPYTHON_CACHE_DIR"] = tempfile.mkdtemp()
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pygame  # noqa: E402
@@ -226,6 +227,24 @@ def test_random_games_with_renderer():
                 break
         assert g.state in (State.GAMEOVER, State.CLEARED, State.PLAY, State.THROW,
                            State.FALLING, State.CLEARING), g.state
+
+
+def test_renderer_scales_and_cache():
+    from renderer import Renderer
+    for scale in (1.25, 1.5, 2.25):   # la 1.0 ya la genero otra prueba
+        r = Renderer(scale)
+        assert r.spr.built, "primera vez: se generan los sprites"
+        surf = pygame.Surface((r.W, r.H))
+        assert (r.W, r.H) == (round(640 * scale), round(480 * scale))
+        assert r.L.cell == round(20 * scale)
+        assert r.spr.doctor[0].get_height() == round(210 * scale)
+        g = Game(Controls(), random.Random(1))
+        g.start_level()
+        for _ in range(60):
+            g.update(16)
+            r.update(16, g)
+        r.draw(surf, g)
+        assert not Renderer(scale).spr.built, "segunda vez: sale del cache"
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # Dr. Python (versión Pygame)
 
-Puzzle de pastillas y virus. Se dibuja siempre en 640x480 y se escala a la pantalla real.
-Corre en Linux x86 y en consolas Anbernic (ARM).
+Puzzle de pastillas y virus. Está diseñado en 640x480 y se dibuja directo a la resolución real
+de la pantalla, con sprites generados a ese tamaño. Corre en Linux x86 y en consolas Anbernic (ARM).
 
 ![Partida](screenshots/04_lanzamiento.png)
 
@@ -10,7 +10,7 @@ Corre en Linux x86 y en consolas Anbernic (ARM).
 ```bash
 python -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/python main.py            # --fullscreen o --window para forzar
+.venv/bin/python main.py            # --fullscreen / --window para forzar, --scale 2 para ventana grande
 ```
 
 Se usa `pygame-ce`: el `pygame` 2.6.1 no carga fuentes con Python 3.14.
@@ -49,8 +49,14 @@ entrada que toques y **Rotar antihorario** quita la última.
 
 ## Anbernic / PortMaster
 
-- Sin escritorio (consola/KMS) arranca en pantalla completa con barras negras: 720x720 → 720x540,
-  1280x720 → 960x720. Se puede fijar en `settings.json` con `"fullscreen": true/false/"auto"`.
+- Sin escritorio (consola/KMS) arranca en pantalla completa. El juego se dibuja a la resolución real
+  con barras negras si no es 4:3: 640x480 → escala 1, 720x720 → 720x540, 1280x720 → 960x720,
+  1920x1080 → 1440x1080. Se puede fijar en `settings.json` con `"fullscreen": true/false/"auto"`
+  y `"window_scale"` para el tamaño de la ventana en el escritorio.
+- Los sprites se generan desde las hojas originales de `assets/` al tamaño justo de cada pantalla y
+  se guardan en `~/.cache/dr-python/` (o `DRPYTHON_CACHE_DIR`). El primer arranque en cada
+  resolución tarda un poco más (en una ARM lenta, unos segundos, con el aviso "Preparando
+  gráficos"); los siguientes cargan del caché.
 - Configuración y récord van a `$XDG_CONFIG_HOME/dr-python/` (o `~/.config/dr-python/`).
   Para PortMaster conviene apuntarla a una carpeta escribible con `DRPYTHON_CONFIG_DIR=conf/`.
 - Si se usa gptokeyb, desactivar su autorrepetición: la repetición de izquierda/derecha ya la hace el juego.
@@ -65,7 +71,6 @@ entrada que toques y **Rotar antihorario** quita la última.
 | `board.py` | Tablero, pastilla, colisiones, matches y caídas (sin pygame) |
 | `game.py` | Estados del juego y menús; recibe comandos, no teclas |
 | `controls.py` | Entrada unificada, autorrepetición, mandos en caliente y reasignación |
-| `renderer.py` | Todo lo que se dibuja y la posición de cada cosa |
-| `sprites.py` | Carga los sprites ya preparados |
-| `tools/build_assets.py` | Recorta y achica las hojas de `assets/src/` a `assets/` |
+| `renderer.py` | Todo lo que se dibuja y la posición de cada cosa, escalado a la pantalla |
+| `sprites.py` | Recorta las hojas originales, las escala al tamaño de la pantalla y las cachea |
 | `tests/test_logic.py` | Pruebas sin ventana: `python tests/test_logic.py` |
