@@ -75,6 +75,25 @@ def test_viruses_never_start_three_in_line():
                     assert b.run_through(r, c) < MATCH_LEN - 1
 
 
+def test_debris_falls_twice_as_fast_as_pill():
+    from config import gravity_for
+    for level in (0, 10):
+        g = Game(Controls())
+        g.level = level
+        g.start_level()
+        g.board = Board()
+        g.viruses = 1
+        g.board.grid[15][0] = Cell(BLUE, virus=True)
+        g.board.grid[2][3] = Cell(RED)            # pedazo suelto: cae 13 filas
+        g.resolve()
+        t = 0
+        while g.state == State.FALLING:
+            g.update(10)
+            t += 10
+        per_row = t / 13
+        assert abs(per_row - gravity_for(level) / 2) < 15, (level, per_row)
+
+
 def test_rotation_kicks_off_right_wall():
     b = Board()
     p = Pill(RED, BLUE)

@@ -4,8 +4,8 @@ import random
 from enum import Enum, auto
 
 from board import Board, Pill
-from config import (CLEAR_TIME, FALL_STEP, MAX_LEVEL, PILL_COLORS, SOFT_DROP,
-                    THROW_TIME, gravity_for, load_json, save_json, virus_count_for)
+from config import (CLEAR_TIME, MAX_LEVEL, PILL_COLORS, SOFT_DROP,
+                    THROW_TIME, fall_step_for, gravity_for, load_json, save_json, virus_count_for)
 from controls import Command as C, ESSENTIAL
 
 CAPTURE_TIMEOUT = 6000
@@ -53,6 +53,8 @@ class Game:
         self.chain = 0
         self.fall_timer = 0
         self.soft_timer = 0
+        self.gravity = gravity_for(0)
+        self.fall_step = fall_step_for(0)
         self.menu = 0               # opcion elegida del menu visible
         self.resume_state = None    # a donde vuelve la pausa
         self.controls_return = State.TITLE
@@ -88,6 +90,7 @@ class Game:
         top_row = max(5, 8 - self.level // 3)    # niveles altos: virus mas arriba
         self.viruses = self.board.place_viruses(virus_count_for(self.level), top_row)
         self.gravity = gravity_for(self.level)
+        self.fall_step = fall_step_for(self.level)
         self.pill = None
         self.next = self.random_pill()
         self.start_throw()
@@ -134,7 +137,7 @@ class Game:
             self.timer = CLEAR_TIME
             self.state = State.CLEARING
         elif self.board.gravity_step(dry=True):
-            self.timer = FALL_STEP
+            self.timer = self.fall_step
             self.state = State.FALLING
         elif self.viruses == 0:
             self.state = State.CLEARED
@@ -245,14 +248,14 @@ class Game:
         self.timer -= dt
         if self.timer <= 0:
             self.clear_matches()
-            self.timer += FALL_STEP
+            self.timer += self.fall_step
             self.state = State.FALLING
 
     def _falling(self, dt):
         self.timer -= dt
         while self.timer <= 0 and self.state == State.FALLING:
             if self.board.gravity_step():
-                self.timer += FALL_STEP
+                self.timer += self.fall_step
             else:
                 self.resolve()
 

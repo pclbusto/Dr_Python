@@ -14,14 +14,20 @@ PILL_COLORS = (RED, YELLOW, BLUE)
 # ---------------------------------------------------------------- tiempos --
 # todo en milisegundos
 CLEAR_TIME = 250         # explosion de lo eliminado
-FALL_STEP = 90           # una fila de caida de pedazos sueltos
 SOFT_DROP = 35           # una fila al mantener abajo
 THROW_TIME = 520         # vuelo de la pastilla de la mano al frasco
 MAX_DT = 100             # tope por cuadro para no "saltar" tras un tiron
 
 
 def gravity_for(level):
+    """ms por fila de la pastilla que controlas."""
     return max(90, 650 - level * 35)
+
+
+def fall_step_for(level):
+    """ms por fila de los pedazos sueltos tras una eliminacion: el doble de
+    rapido que la pastilla de ese nivel, asi se siente proporcional."""
+    return gravity_for(level) // 2
 
 
 def virus_count_for(level):
